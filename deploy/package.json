@@ -2,5 +2,8 @@
   "name": "medhub24-deploy",
   "private": true,
   "version": "0.0.0",
-  "description": "Deploy-only directory. Deliberately dependency-free: Cloudflare's build installs from its Root directory, and pointing that at the repository root pulled in the create-vue toolchain (esbuild, zx, husky, prettier) plus the `playground` git submodule to publish a static site that needs none of it. With Root directory set to `deploy`, the install step finds this file, has nothing to install, and cannot fail."
+  "description": "Deploy-only directory. Set Cloudflare's build Root directory to `deploy`. Pointed at the repository root instead, the Installing step fails in ~3s: pnpm-lock.yaml is lockfileVersion 5.3 (pnpm 6-era) which a current pnpm rejects outright, and pnpm-workspace.yaml globs playground/**, an empty git submodule. None of that tooling is used by the site. This directory has no dependencies and no lockfile, so Installing is a no-op. The build script is a deliberate no-op too, so a Build command of `pnpm run build` succeeds here rather than failing on a missing script — the site is plain files and needs no build either way.",
+  "scripts": {
+    "build": "echo 'Static site — nothing to build. See ../medhub24 and wrangler.jsonc.'"
+  }
 }

@@ -110,3 +110,8 @@ dist
 # Wrangler local state (miniflare caches from `wrangler dev --local`).
 # Machine-local scratch: never useful in the repository.
 .wrangler/
+
+# The deploy/ directory is deliberately dependency-free so Cloudflare's
+# Installing step is a no-op. A lockfile there would be noise, and would
+# reintroduce the class of failure it exists to avoid.
+deploy/package-lock.json

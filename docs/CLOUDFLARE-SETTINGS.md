@@ -10,33 +10,34 @@ Cloudflare → **Compute (Workers & Pages)** → the **medhub24** worker →
 | Field | What to put | Why |
 |---|---|---|
 | **Branch** | **`main`** | The website is now on `main`. If Cloudflare was pointed at a branch that did not contain it, that alone would explain everything. |
-| Root directory | blank **or** `deploy` | **Either works.** If unsure, leave it blank. See below. |
-| Build command | *leave empty* | The website is plain files. There is nothing to build. |
+| **Root directory** | **`deploy`** | **Must be `deploy`.** At `/` the build dies before it reaches your website — see below. |
+| Build command | *empty, or leave as-is* | Either works now. The website is plain files; there is nothing to build. |
 | Deploy command | `npx wrangler deploy` | The command that publishes it. |
 
 Click **Save**, then find the most recent deployment and click
 **Retry deployment**.
 
-### Why "Root directory" no longer matters
+### Why "Root directory" must be `deploy`
 
-It used to. The website is 45 plain files needing no processing, but they sit
-inside a copy of an unrelated tool for Vue developers whose setup files are at
-the top of the folder — so Cloudflare would try to install that whole toolchain
-before publishing your site, and any stumble there stopped the build.
+A build log showed exactly what happens when it is `/`:
 
-The publishing instructions now exist in **both** places, kept identical
-automatically, so it works either way:
+```
+Initializing 3s ✓   Cloning 8s ✓   Installing 3s ✗   Building —   Deploying —
+```
 
-| Root directory | What it uses |
-|---|---|
-| blank (the default) | the instructions at the top of the folder |
-| `deploy` | the small folder containing only those instructions |
+It fails at **Installing**, in three seconds, and never reaches your website at
+all.
 
-The setup script that was most likely to fail has also been fixed, so the
-toolchain can no longer break the build from the top level.
+The reason is nothing to do with your site. It sits inside a copy of an
+unrelated tool for Vue developers, and that tool's dependency list is from 2022
+— in a format today's tools refuse to read. It also refers to a second project
+that is not downloaded. Cloudflare tries to set all of that up first, and stops.
 
-**Leave it blank if you are unsure.** The field that actually matters is
-**Branch**.
+`deploy` is a small folder holding only the publishing instructions. Nothing to
+install there, so nothing to fail. Your website is published from it.
+
+The build command can stay exactly as it is — that folder now answers it with a
+harmless "nothing to build".
 
 ---
 
